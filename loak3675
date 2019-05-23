@@ -1,0 +1,68 @@
+//Logan Aker
+// Serial Communication to P5.JS
+//5/23/2019
+
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
+
+// set our signal pin
+#define PIN 13 //whatever pin you connected the strip to
+
+// create an instance of the library, call it 'strip'
+// first parameter = # of lights
+// seond parameter = PIN plugged into
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(13, PIN, NEO_GRB + NEO_KHZ800);
+
+
+void setup() {
+  Serial.begin(9600); // establish serial connection and rate
+
+  strip.begin();
+  strip.show();
+}
+
+void loop() {
+  // SENDS VALUES TO P5
+  int radial = analogRead(A0);
+  int slider = analogRead(A5);
+
+  //format a message to send to p5
+  Serial.print(radial);
+  Serial.print(",");
+  Serial.println(slider);
+
+  delay(1); // delay so we don't overload serial port
+
+
+  //if sending specific values for key presses
+  if (Serial.available() > 0) {
+    //read it
+    int inByte = Serial.read();
+    if (inByte == 1) {
+      for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, 75,0,130);
+        strip.show();
+      }
+    }
+    else if (inByte == 2) {
+      for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, 255,255,0);
+        strip.show();
+      }
+    }
+    else if (inByte == 3) {
+      for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, 244, 128, 65);
+        strip.show();
+      }
+    }
+    else {
+      for (uint16_t i = 0; i < strip.numPixels(); i++) {
+        strip.setPixelColor(i, 0, 0, 0);
+        strip.show();
+      }
+    }
+  }
+}
